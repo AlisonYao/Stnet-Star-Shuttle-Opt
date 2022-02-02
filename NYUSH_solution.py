@@ -366,9 +366,9 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
         print(f'----------------------------- generation {i + 1} Start! -----------------------------')
         elitism_begin = time.time()
         elites = elitism(population, population_fitnesses_add_penalty, elitism_cutoff)
-        print('Elites selected!')
+        # print('Elites selected!')
         children = create_next_generation(population, population_fitnesses_add_penalty, population_size, elitism_cutoff)
-        print('Children created!')
+        # print('Children created!')
         population = np.concatenate([elites, children])
         population_fitnesses_add_penalty = [fitness(binary_N_paths, addPenalty=True) for binary_N_paths in population]
         population_fitnesses = [fitness(binary_N_paths) for binary_N_paths in population]
@@ -382,10 +382,10 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
         print("\nAll constraints met?", allFeasibilityFlag)
 
         # print best solution
-        print('best solution (path):\n', best_solution)
+        # print('best solution (path):\n', best_solution)
         directional_N_paths = [decode_one_path(one_path) for one_path in population[minIndex]]
         link = sum(directional_N_paths)
-        print('best solution (link): \n', link)
+        # print('best solution (link): \n', link)
 
         print(f'---------------------- generation {i + 1} evolved! Time: {evol_end - elitism_begin:.4f}s ----------------------\n')
 
@@ -406,7 +406,14 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
 if __name__ == "__main__":
 
     """initialization for genetic algo"""
-    initial_prob = 0.8
+    # starting from a lower initial_prob will give you fewer 1s, 
+    # then demand constraint is violated, 
+    # but rush hour constraint and max working hour constraint are likely to be satisfied
+    # starting from a higher initial_prob will give you more 1s,
+    # then demand constraint is unlikely to be violated,
+    # but rush hour constraint and max working hour constraint are probably violated.
+    # So there's the tradeoff
+    initial_prob = 0.3 # here I am going to start small
     pusan_prob = 0.2
     population_size = 20
     elitism_cutoff = 2
@@ -416,7 +423,7 @@ if __name__ == "__main__":
 
     """initialization for buses"""
     # # of buses
-    N = 23
+    N = 25
     # #seats on each bus
     D = 50
     tolerance = 0
@@ -434,7 +441,7 @@ if __name__ == "__main__":
     intervalNum = demand.shape[-1]
     maxWorkingHour = 4
     checkDemandFlag, checkRushHourFlag, checkMaxWorkingHourFlag = True, True, True
-    alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 10, 7, 5
+    alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 10, 10, 10 # 20, 17, 15
 
     # run main function
     run_evolution(population_size, evolution_depth, elitism_cutoff)
