@@ -1,6 +1,6 @@
 """
 Author: Yuhan Yao (yy2564@nyu.edu)
-Date: Feb 2, 2022
+Date: Feb 3, 2022
 """
 
 import random
@@ -194,10 +194,14 @@ def check_feasibility(binary_N_paths, checkDemand=True, checkRushHour=False, che
         maxWorkingHour, maxWorkingHourViolationNum = max_working_hour_constraint(binary_N_paths)
     if not demandFlag:
         print("d"+str(demandViolationNum), end="")
+        f.write('d' + str(demandViolationNum))
     if not rushHour:
         print("r"+str(rushHourViolationNum), end="")
+        f.write('r' + str(rushHourViolationNum))
     if not maxWorkingHour:
         print("w"+str(maxWorkingHourViolationNum), end="")
+        f.write('w' + str(maxWorkingHourViolationNum))
+    f.write('\n')
     return demandFlag and rushHour and maxWorkingHour
 
 def fitness(binary_N_paths, addPenalty=False):
@@ -333,16 +337,24 @@ def result_stats(progress_with_penalty, progress):
     print important stats & visulize progress_with_penalty
     """
     print('**************************************************************')
-    print(f"Progress_with_penalty of improvement: {progress_with_penalty[0]} to {progress_with_penalty[-1]}" )
+    print(f"Progress_with_penalty of improvement: {progress_with_penalty[0]} to {progress_with_penalty[-1]}")
     print(f"Progress of improvement: {progress[0]} to {progress[-1]}")
     print("Improvement Rate of progress:", abs(progress[-1] - progress[0])/progress[0])
     print('**************************************************************')
+    # write to file
+    f.write('**************************************************************' + '\n')
+    f.write("Progress_with_penalty of improvement:" + str(progress_with_penalty[0]) + "to" + str(progress_with_penalty[-1]) + '\n')
+    f.write("Progress of improvement: " + str(progress[0]) + ' to ' + str(progress[-1]) + '\n')
+    f.write("Improvement Rate of progress: " + str(abs(progress[-1] - progress[0])/progress[0]) + '\n')
+    f.write('**************************************************************' + '\n')
+    # show plot
     plt.plot(progress_with_penalty, data=progress_with_penalty, label='with penalty')
     plt.plot(progress, data=progress, label='no penalty')
     plt.xlabel("Generation")
     plt.ylabel("Cost")
     plt.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig(str(save_name) + '.png')
 
 def run_evolution(population_size, evolution_depth, elitism_cutoff):
     '''
@@ -389,6 +401,10 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
 
         print(f'---------------------- generation {i + 1} evolved! Time: {evol_end - elitism_begin:.4f}s ----------------------\n')
 
+        if i % 20 == 0:
+            f.write('----------------------------- generation ' + str(i+1) + ' Start! -----------------------------\n')
+            f.write('Min Cost Penalty: ' + str(min(population_fitnesses_add_penalty)) + ' -> ' + str(min(population_fitnesses)) + '\n')
+
     # plot results
     result_stats(progress_with_penalty, progress)
 
@@ -396,12 +412,15 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
     minIndex = population_fitnesses_add_penalty.index(min(population_fitnesses_add_penalty))
     best_solution = population[minIndex]
     print('best solution (path):\n', best_solution)
+    f.write('best solution (path):\n' + str(best_solution) + '\n')
 
     # check if all constraints are met (ideally True)
     print("\nAll constraints met?", check_feasibility(best_solution, checkDemand=checkDemandFlag, checkRushHour=checkRushHourFlag, checkMaxWorkingHour=checkMaxWorkingHourFlag))
+    f.write("All constraints met? " + str(check_feasibility(best_solution, checkDemand=checkDemandFlag, checkRushHour=checkRushHourFlag, checkMaxWorkingHour=checkMaxWorkingHourFlag)) + '\n')
     directional_N_paths = [decode_one_path(one_path) for one_path in population[minIndex]]
     link = sum(directional_N_paths)
     print('best solution (link): \n', link)
+    f.write('best solution (link): \n' + str(link) + '\n')
 
 if __name__ == "__main__":
 
@@ -413,17 +432,17 @@ if __name__ == "__main__":
     # then demand constraint is unlikely to be violated,
     # but rush hour constraint and max working hour constraint are probably violated.
     # So there's the tradeoff
-    initial_prob = 0.3 # here I am going to start small
+    initial_prob = 0.3 # # here I am going to start small
     pusan_prob = 0.2
     population_size = 20
     elitism_cutoff = 2
-    mutation_num = 1
+    mutation_num = 1 #
     loop_limit = 100
-    evolution_depth = 2000
+    evolution_depth = 3000 #
 
     """initialization for buses"""
     # # of buses
-    N = 25
+    N = 25 #
     # #seats on each bus
     D = 50
     tolerance = 0
@@ -443,5 +462,22 @@ if __name__ == "__main__":
     checkDemandFlag, checkRushHourFlag, checkMaxWorkingHourFlag = True, True, True
     alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 10, 10, 10 # 20, 17, 15
 
-    # run main function
+    # run main function & save everything to txt and png
+    save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_'+str(mutation_num)+'_N'+str(N)
+    f = open(save_name + '.txt', 'w')
+    f.write('initial_prob: ' + str(initial_prob) + '\n')
+    f.write('pusan_prob: ' + str(pusan_prob) + '\n')
+    f.write('population_size: ' + str(population_size) + '\n')
+    f.write('elitism_cutoff: ' + str(elitism_cutoff) + '\n')
+    f.write('mutation_num: ' + str(mutation_num) + '\n')
+    f.write('loop_limit: ' + str(loop_limit) + '\n')
+    f.write('evolution_depth: ' + str(evolution_depth) + '\n')
+    f.write('N: ' + str(N) + '\n')
+    f.write('D: ' + str(D) + '\n')
+    f.write('tolerance: ' + str(tolerance) + '\n')
+    f.write('intervalDuration:' + str(intervalDuration) + '\n')
+    f.write('demand:' + str(demand) + '\n')
+    f.write('maxWorkingHour: ' + str(maxWorkingHour) + '\n')
+    f.write('alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty: ' + str(alpha) + ',' + str(demandViolationPenalty) + ',' + str(rushHourViolationPenalty) + ',' + str(maxWorkingHourViolationPenalty) + '\n')
     run_evolution(population_size, evolution_depth, elitism_cutoff)
+    f.close()
