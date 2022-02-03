@@ -7,6 +7,7 @@ import random
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 
 def generate_random_N_paths(N, path_length):
@@ -355,6 +356,7 @@ def result_stats(progress_with_penalty, progress):
     plt.legend()
     # plt.show()
     plt.savefig(str(save_name) + '.png')
+    plt.clf()
 
 def run_evolution(population_size, evolution_depth, elitism_cutoff):
     '''
@@ -438,7 +440,7 @@ if __name__ == "__main__":
     elitism_cutoff = 2
     mutation_num = 1 #
     loop_limit = 100
-    evolution_depth = 3000 #
+    evolution_depth = 5000 #
 
     """initialization for buses"""
     # # of buses
@@ -463,21 +465,22 @@ if __name__ == "__main__":
     alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 10, 10, 10 # 20, 17, 15
 
     # run main function & save everything to txt and png
-    save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_'+str(mutation_num)+'_N'+str(N)
-    f = open(save_name + '.txt', 'w')
-    f.write('initial_prob: ' + str(initial_prob) + '\n')
-    f.write('pusan_prob: ' + str(pusan_prob) + '\n')
-    f.write('population_size: ' + str(population_size) + '\n')
-    f.write('elitism_cutoff: ' + str(elitism_cutoff) + '\n')
-    f.write('mutation_num: ' + str(mutation_num) + '\n')
-    f.write('loop_limit: ' + str(loop_limit) + '\n')
-    f.write('evolution_depth: ' + str(evolution_depth) + '\n')
-    f.write('N: ' + str(N) + '\n')
-    f.write('D: ' + str(D) + '\n')
-    f.write('tolerance: ' + str(tolerance) + '\n')
-    f.write('intervalDuration:' + str(intervalDuration) + '\n')
-    f.write('demand:' + str(demand) + '\n')
-    f.write('maxWorkingHour: ' + str(maxWorkingHour) + '\n')
-    f.write('alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty: ' + str(alpha) + ',' + str(demandViolationPenalty) + ',' + str(rushHourViolationPenalty) + ',' + str(maxWorkingHourViolationPenalty) + '\n')
-    run_evolution(population_size, evolution_depth, elitism_cutoff)
-    f.close()
+    for _ in range(3):
+        save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_'+str(mutation_num)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%M-%d_%H-%M-%S")
+        f = open(save_name + '.txt', 'w')
+        f.write('initial_prob: ' + str(initial_prob) + '\n')
+        f.write('pusan_prob: ' + str(pusan_prob) + '\n')
+        f.write('population_size: ' + str(population_size) + '\n')
+        f.write('elitism_cutoff: ' + str(elitism_cutoff) + '\n')
+        f.write('mutation_num: ' + str(mutation_num) + '\n')
+        f.write('loop_limit: ' + str(loop_limit) + '\n')
+        f.write('evolution_depth: ' + str(evolution_depth) + '\n')
+        f.write('N: ' + str(N) + '\n')
+        f.write('D: ' + str(D) + '\n')
+        f.write('tolerance: ' + str(tolerance) + '\n')
+        f.write('intervalDuration:' + str(intervalDuration) + '\n')
+        f.write('demand:' + str(demand) + '\n')
+        f.write('maxWorkingHour: ' + str(maxWorkingHour) + '\n')
+        f.write('alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty: '+str(alpha)+', '+str(demandViolationPenalty)+', '+str(rushHourViolationPenalty)+', '+str(maxWorkingHourViolationPenalty)+'\n')
+        run_evolution(population_size, evolution_depth, elitism_cutoff)
+        f.close()
