@@ -344,7 +344,7 @@ def result_stats(progress_with_penalty, progress):
     print('**************************************************************')
     # write to file
     f.write('**************************************************************' + '\n')
-    f.write("Progress_with_penalty of improvement:" + str(progress_with_penalty[0]) + "to" + str(progress_with_penalty[-1]) + '\n')
+    f.write("Progress_with_penalty of improvement: " + str(progress_with_penalty[0]) + " to " + str(progress_with_penalty[-1]) + '\n')
     f.write("Progress of improvement: " + str(progress[0]) + ' to ' + str(progress[-1]) + '\n')
     f.write("Improvement Rate of progress: " + str(abs(progress[-1] - progress[0])/progress[0]) + '\n')
     f.write('**************************************************************' + '\n')
@@ -440,7 +440,7 @@ if __name__ == "__main__":
     elitism_cutoff = 2
     mutation_num = 1 #
     loop_limit = 100
-    evolution_depth = 5000 #
+    evolution_depth = 30000 #
 
     """initialization for buses"""
     # # of buses
@@ -462,11 +462,11 @@ if __name__ == "__main__":
     intervalNum = demand.shape[-1]
     maxWorkingHour = 4
     checkDemandFlag, checkRushHourFlag, checkMaxWorkingHourFlag = True, True, True
-    alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 10, 10, 10 # 20, 17, 15
+    alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 20, 20, 20 # 20, 17, 15
 
     # run main function & save everything to txt and png
     for _ in range(3):
-        save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_'+str(mutation_num)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%M-%d_%H-%M-%S")
+        save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_'+str(mutation_num)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         f = open(save_name + '.txt', 'w')
         f.write('initial_prob: ' + str(initial_prob) + '\n')
         f.write('pusan_prob: ' + str(pusan_prob) + '\n')
