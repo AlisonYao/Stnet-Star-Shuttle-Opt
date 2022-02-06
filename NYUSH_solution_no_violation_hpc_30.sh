@@ -25,4 +25,4 @@ echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 echo "SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 
 echo ${SLURM_ARRAY_TASK_ID}
-python NYUSH_solution_no_violation_hpc.py --setting ${SLURM_ARRAY_TASK_ID}
+python NYUSH_solution_no_violation_hpc_30.py --setting ${SLURM_ARRAY_TASK_ID}

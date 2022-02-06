@@ -1,11 +1,6 @@
 """
 Author: Yuhan Yao (yy2564@nyu.edu)
 Date: Feb 5, 2022
-
-I am having trouble getting a feasible solution. I have done more than 60 experiments, but still have not obtain a solution that doesn't violate any constraint. 
-Therefore, I made this version so that it only stops when there is a feasible solution. 
-WARINING: it's possible that it will never end...
-So I dumped this into a hpc and keeps it running there. We will see what will happen.
 """
 
 import random
@@ -199,13 +194,13 @@ def check_feasibility(binary_N_paths, checkDemand=True, checkRushHour=False, che
     if checkMaxWorkingHour:
         maxWorkingHour, maxWorkingHourViolationNum = max_working_hour_constraint(binary_N_paths)
     if not demandFlag:
-        # print("d"+str(demandViolationNum), end="")
+        print("d"+str(demandViolationNum), end="")
         f.write('d' + str(demandViolationNum))
     if not rushHour:
-        # print("r"+str(rushHourViolationNum), end="")
+        print("r"+str(rushHourViolationNum), end="")
         f.write('r' + str(rushHourViolationNum))
     if not maxWorkingHour:
-        # print("w"+str(maxWorkingHourViolationNum), end="")
+        print("w"+str(maxWorkingHourViolationNum), end="")
         f.write('w' + str(maxWorkingHourViolationNum))
     f.write('\n')
     return demandFlag and rushHour and maxWorkingHour
@@ -284,13 +279,11 @@ def create_next_generation(population, population_fitnesses_add_penalty, populat
             k=2
         )
         kid1, kid2 = single_point_crossover(parents[0], parents[1])
-        for _ in range(mutation_num):
-            kid1 = single_mutation(kid1)
+        kid1 = mutation(kid1)
         children.append(kid1)
         if len(children) == population_size - elitism_cutoff:
             return np.array(children)
-        for _ in range(mutation_num):
-            kid2 = single_mutation(kid2)
+        kid2 = mutation(kid2)
         children.append(kid2)
         if len(children) == population_size - elitism_cutoff:
             return np.array(children)
@@ -317,36 +310,55 @@ def single_point_crossover(parent1, parent2):
         count += 1
     return parent1, parent2
 
-def single_mutation(binary_N_paths):
+def mutation(binary_N_paths):
     """
     Mutate only one node in one path for now
     """
-    count = 0
-    binary_N_paths_copy = binary_N_paths.copy()
-    while count <= loop_limit:
-        mutate_path = np.random.randint(0, N)
-        mutate_index = np.random.randint(0, intervalNum) * 2
-        double_digits_to_mutate = binary_N_paths_copy[mutate_path][mutate_index:mutate_index+2]
-        pool = ['00', '01', '10']
-        pool.remove(double_digits_to_mutate)
-        mutated_double_digits = random.choices(population=pool)[0]
-        original_string = binary_N_paths_copy[mutate_path]
-        mutated_string = original_string[:mutate_index] + mutated_double_digits + original_string[mutate_index+2:]
-        if check_path_integrity(mutated_string):
-            binary_N_paths_copy[mutate_path] = mutated_string
-            return binary_N_paths_copy
-        count += 1
+    # case 1: concentional mutation implementation
+    if mutation_type == 'Conv':
+        binary_N_paths_copy = binary_N_paths.copy()
+        for mutate_path in range(0, N):
+            for mutate_index in range(0, intervalNum):
+                if random.random() > mutation_prob:
+                    mutate_index *= 2
+                    double_digits_to_mutate = binary_N_paths_copy[mutate_path][mutate_index:mutate_index+2]
+                    pool = ['00', '01', '10']
+                    pool.remove(double_digits_to_mutate)
+                    mutated_double_digits = random.choices(population=pool)[0]
+                    original_string = binary_N_paths_copy[mutate_path]
+                    mutated_string = original_string[:mutate_index] + mutated_double_digits + original_string[mutate_index+2:]
+                    if check_path_integrity(mutated_string):
+                        binary_N_paths_copy[mutate_path] = mutated_string
+                        return binary_N_paths_copy
+    # case 2: self-designed mutation implementation
+    else:
+        print('binary_N_paths:', binary_N_paths)
+        count = 0
+        binary_N_paths_copy = binary_N_paths.copy()
+        while count <= loop_limit:
+            mutate_path = np.random.randint(0, N)
+            mutate_index = np.random.randint(0, intervalNum) * 2
+            double_digits_to_mutate = binary_N_paths_copy[mutate_path][mutate_index:mutate_index+2]
+            pool = ['00', '01', '10']
+            pool.remove(double_digits_to_mutate)
+            mutated_double_digits = random.choices(population=pool)[0]
+            original_string = binary_N_paths_copy[mutate_path]
+            mutated_string = original_string[:mutate_index] + mutated_double_digits + original_string[mutate_index+2:]
+            if check_path_integrity(mutated_string):
+                binary_N_paths_copy[mutate_path] = mutated_string
+                return binary_N_paths_copy
+            count += 1
     return binary_N_paths
 
 def result_stats(progress_with_penalty, progress):
     """
     print important stats & visulize progress_with_penalty
     """
-    # print('**************************************************************')
-    # print(f"Progress_with_penalty of improvement: {progress_with_penalty[0]} to {progress_with_penalty[-1]}")
-    # print(f"Progress of improvement: {progress[0]} to {progress[-1]}")
-    # print("Improvement Rate of progress:", abs(progress[-1] - progress[0])/progress[0])
-    # print('**************************************************************')
+    print('**************************************************************')
+    print(f"Progress_with_penalty of improvement: {progress_with_penalty[0]} to {progress_with_penalty[-1]}")
+    print(f"Progress of improvement: {progress[0]} to {progress[-1]}")
+    print("Improvement Rate of progress:", abs(progress[-1] - progress[0])/progress[0])
+    print('**************************************************************')
     # write to file
     f.write('**************************************************************' + '\n')
     f.write("Progress_with_penalty of improvement: " + str(progress_with_penalty[0]) + " to " + str(progress_with_penalty[-1]) + '\n')
@@ -372,21 +384,17 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
     # first initialize a population 
     population, population_fitnesses_add_penalty = generate_population(population_size)
     initialization_end = time.time()
-    # print(f'\nInitialization Done! Time: {initialization_end - tic:.6f}s')
+    print(f'\nInitialization Done! Time: {initialization_end - tic:.6f}s')
     population_fitnesses = [fitness(binary_N_paths) for binary_N_paths in population]
-    # print(f'Initial Min Cost: {min(population_fitnesses_add_penalty)} -> {min(population_fitnesses)}')
+    print(f'Initial Min Cost: {min(population_fitnesses_add_penalty)} -> {min(population_fitnesses)}')
     # keep track of improvement
     progress_with_penalty, progress = [], []
-    allFeasibilityFlag = False
-    i = 0
-    ii = 0
-    startover = False
 
     # start evolving :)
-    while (allFeasibilityFlag is False) or (ii <= evolution_depth):
+    for i in range(evolution_depth):
         progress_with_penalty.append(min(population_fitnesses_add_penalty))
         progress.append(min(population_fitnesses))
-        # print(f'----------------------------- generation {i + 1} Start! -----------------------------')
+        print(f'----------------------------- generation {i + 1} Start! -----------------------------')
         elitism_begin = time.time()
         elites = elitism(population, population_fitnesses_add_penalty, elitism_cutoff)
         # print('Elites selected!')
@@ -397,12 +405,12 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
         population_fitnesses = [fitness(binary_N_paths) for binary_N_paths in population]
         
         evol_end = time.time()
-        # print(f"Min Cost: {min(population_fitnesses_add_penalty)} -> {min(population_fitnesses)}")
+        print(f"Min Cost: {min(population_fitnesses_add_penalty)} -> {min(population_fitnesses)}")
         # check best solution feasibility
         minIndex = population_fitnesses_add_penalty.index(min(population_fitnesses_add_penalty))
         best_solution = population[minIndex]
         allFeasibilityFlag = check_feasibility(best_solution, checkRushHour=checkRushHourFlag, checkMaxWorkingHour=checkMaxWorkingHourFlag)
-        # print("\nAll constraints met?", allFeasibilityFlag)
+        print("\nAll constraints met?", allFeasibilityFlag)
 
         # print best solution
         # print('best solution (path):\n', best_solution)
@@ -410,47 +418,30 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
         link = sum(directional_N_paths)
         # print('best solution (link): \n', link)
 
-        # print(f'---------------------- generation {i + 1} evolved! Time: {evol_end - elitism_begin:.4f}s ----------------------\n')
+        print(f'---------------------- generation {i + 1} evolved! Time: {evol_end - elitism_begin:.4f}s ----------------------\n')
 
-        i += 1
-        if allFeasibilityFlag:
-            ii += 1
-        
         if i % 20 == 0:
             f.write('----------------------------- generation ' + str(i+1) + ' Start! -----------------------------\n')
             f.write('Min Cost Penalty: ' + str(min(population_fitnesses_add_penalty)) + ' -> ' + str(min(population_fitnesses)) + '\n')
 
-        if i - ii >= max_iter_num:
-            startover = True
-            break
-    
-    if startover:
-        # print('need to start over')
-        return False
-    else:
-        # print('no need to start over')
-        # plot results
-        result_stats(progress_with_penalty, progress)
+    # plot results
+    result_stats(progress_with_penalty, progress)
 
-        # print best solution
-        minIndex = population_fitnesses_add_penalty.index(min(population_fitnesses_add_penalty))
-        best_solution = population[minIndex]
-        # print('best solution (path):\n', best_solution)
-        f.write('best solution (path):\n' + str(best_solution) + '\n')
+    # print best solution
+    minIndex = population_fitnesses_add_penalty.index(min(population_fitnesses_add_penalty))
+    best_solution = population[minIndex]
+    print('best solution (path):\n', best_solution)
+    f.write('best solution (path):\n' + str(best_solution) + '\n')
 
-        # check if all constraints are met (ideally True)
-        # print("\nAll constraints met?", check_feasibility(best_solution, checkDemand=checkDemandFlag, checkRushHour=checkRushHourFlag, checkMaxWorkingHour=checkMaxWorkingHourFlag))
-        f.write("All constraints met? " + str(check_feasibility(best_solution, checkDemand=checkDemandFlag, checkRushHour=checkRushHourFlag, checkMaxWorkingHour=checkMaxWorkingHourFlag)) + '\n')
-        directional_N_paths = [decode_one_path(one_path) for one_path in population[minIndex]]
-        link = sum(directional_N_paths)
-        # print('best solution (link): \n', link)
-        f.write('best solution (link): \n' + str(link) + '\n')
-        f.write('#iteration: ' + str(i) + '\n')
-        return True
+    # check if all constraints are met (ideally True)
+    print("\nAll constraints met?", check_feasibility(best_solution, checkDemand=checkDemandFlag, checkRushHour=checkRushHourFlag, checkMaxWorkingHour=checkMaxWorkingHourFlag))
+    f.write("All constraints met? " + str(check_feasibility(best_solution, checkDemand=checkDemandFlag, checkRushHour=checkRushHourFlag, checkMaxWorkingHour=checkMaxWorkingHourFlag)) + '\n')
+    directional_N_paths = [decode_one_path(one_path) for one_path in population[minIndex]]
+    link = sum(directional_N_paths)
+    print('best solution (link): \n', link)
+    f.write('best solution (link): \n' + str(link) + '\n')
 
 if __name__ == "__main__":
-
-    SUCCESS = False
 
     """initialization for genetic algo"""
     # starting from a lower initial_prob will give you fewer 1s, 
@@ -464,14 +455,14 @@ if __name__ == "__main__":
     pusan_prob = 0.2
     population_size = 20
     elitism_cutoff = 2
-    mutation_num = 1 #
+    mutation_type = 'New' # 'Conv'
+    mutation_prob = 0.95
     loop_limit = 100
-    evolution_depth = 30000
-    max_iter_num = 20000
+    evolution_depth = 1000 #
 
     """initialization for buses"""
     # # of buses
-    N = 35 #
+    N = 30 #
     # #seats on each bus
     D = 50
     tolerance = 0
@@ -481,11 +472,6 @@ if __name__ == "__main__":
         [114,106,132,132,117,83,57,52,13,8,18,13,26,3,13,10,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0], 
         [0,0,0,0,0,0,14,2,0,7,12,7,9,5,7,7,12,9,32,39,53,35,30,18,60,44,60,53,90,58,78,71,35,55]
     ])
-    # testing
-    # demand = np.array([
-    #     [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], 
-    #     [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    # ])
     demand_JQJY = demand
     demand_JQJY = demand_JQJY.astype(int)
     demand_PS = np.around(demand / 9)
@@ -497,26 +483,21 @@ if __name__ == "__main__":
     alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 10, 10, 10 # 20, 17, 15
 
     # run main function & save everything to txt and png
-    while not SUCCESS:
-        save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_'+str(mutation_num)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'_nv'
-        f = open(save_name + '.txt', 'w')
-        f.write('initial_prob: ' + str(initial_prob) + '\n')
-        f.write('pusan_prob: ' + str(pusan_prob) + '\n')
-        f.write('population_size: ' + str(population_size) + '\n')
-        f.write('elitism_cutoff: ' + str(elitism_cutoff) + '\n')
-        f.write('mutation_num: ' + str(mutation_num) + '\n')
-        f.write('loop_limit: ' + str(loop_limit) + '\n')
-        f.write('evolution_depth: ' + str(evolution_depth) + '\n')
-        f.write('max_iter_num: ' + str(max_iter_num) + '\n')
-        f.write('N: ' + str(N) + '\n')
-        f.write('D: ' + str(D) + '\n')
-        f.write('tolerance: ' + str(tolerance) + '\n')
-        f.write('intervalDuration:' + str(intervalDuration) + '\n')
-        f.write('demand:' + str(demand) + '\n')
-        f.write('maxWorkingHour: ' + str(maxWorkingHour) + '\n')
-        f.write('alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty: '+str(alpha)+', '+str(demandViolationPenalty)+', '+str(rushHourViolationPenalty)+', '+str(maxWorkingHourViolationPenalty)+'\n')
-        start_time = time.time()
-        SUCCESS = run_evolution(population_size, evolution_depth, elitism_cutoff)
-        end_time = time.time()
-        f.write('total run time: ' + str(end_time - start_time) + 's')
-        f.close()
+    # save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    save_name =  'test_results/testing'
+    f = open(save_name + '.txt', 'w')
+    f.write('initial_prob: ' + str(initial_prob) + '\n')
+    f.write('pusan_prob: ' + str(pusan_prob) + '\n')
+    f.write('population_size: ' + str(population_size) + '\n')
+    f.write('elitism_cutoff: ' + str(elitism_cutoff) + '\n')
+    f.write('loop_limit: ' + str(loop_limit) + '\n')
+    f.write('evolution_depth: ' + str(evolution_depth) + '\n')
+    f.write('N: ' + str(N) + '\n')
+    f.write('D: ' + str(D) + '\n')
+    f.write('tolerance: ' + str(tolerance) + '\n')
+    f.write('intervalDuration:' + str(intervalDuration) + '\n')
+    f.write('demand:' + str(demand) + '\n')
+    f.write('maxWorkingHour: ' + str(maxWorkingHour) + '\n')
+    f.write('alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty: '+str(alpha)+', '+str(demandViolationPenalty)+', '+str(rushHourViolationPenalty)+', '+str(maxWorkingHourViolationPenalty)+'\n')
+    run_evolution(population_size, evolution_depth, elitism_cutoff)
+    f.close()
