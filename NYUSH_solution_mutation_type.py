@@ -332,7 +332,6 @@ def mutation(binary_N_paths):
                         return binary_N_paths_copy
     # case 2: self-designed mutation implementation
     else:
-        print('binary_N_paths:', binary_N_paths)
         count = 0
         binary_N_paths_copy = binary_N_paths.copy()
         while count <= loop_limit:
@@ -455,10 +454,10 @@ if __name__ == "__main__":
     pusan_prob = 0.2
     population_size = 20
     elitism_cutoff = 2
-    mutation_type = 'New' # 'Conv'
+    mutation_type = 'New' # 'Conv', 'New'
     mutation_prob = 0.95
     loop_limit = 100
-    evolution_depth = 1000 #
+    evolution_depth = 30000 #
 
     """initialization for buses"""
     # # of buses
@@ -480,11 +479,11 @@ if __name__ == "__main__":
     intervalNum = demand.shape[-1]
     maxWorkingHour = 4
     checkDemandFlag, checkRushHourFlag, checkMaxWorkingHourFlag = True, True, True
-    alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 10, 10, 10 # 20, 17, 15
+    alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 100, 100, 100 # 10, 10, 10 # 20, 17, 15
 
     # run main function & save everything to txt and png
-    # save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    save_name =  'test_results/testing'
+    save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+str(mutation_type)
+    # save_name =  'test_results/testing'
     f = open(save_name + '.txt', 'w')
     f.write('initial_prob: ' + str(initial_prob) + '\n')
     f.write('pusan_prob: ' + str(pusan_prob) + '\n')
