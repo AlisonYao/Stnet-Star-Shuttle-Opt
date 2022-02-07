@@ -471,7 +471,7 @@ if __name__ == "__main__":
 
     """initialization for buses"""
     # # of buses
-    N = 35 #
+    N = 15 #
     # #seats on each bus
     D = 50
     tolerance = 0
