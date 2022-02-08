@@ -7,7 +7,7 @@
 #SBATCH --mail-type=ALL # select which email types will be sent
 #SBATCH --mail-user=yy2564@nyu.edu # put your email here if you want emails
 
-#SBATCH --array=0
+#SBATCH --array=0-2
 # we have 8 jobs indexed from 0 to 7, which will show up in SLURM_ARRAY_TASK_ID(see last line)
 # the first cpu is gonna run hw1_1.py --setting 0 etc
 
@@ -25,4 +25,4 @@ echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 echo "SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 
 echo ${SLURM_ARRAY_TASK_ID}
-python NYUSH_solution_no_violation_hpc_30.py --setting ${SLURM_ARRAY_TASK_ID}
+python N24.py --setting ${SLURM_ARRAY_TASK_ID}

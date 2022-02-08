@@ -463,7 +463,7 @@ if __name__ == "__main__":
 
     """initialization for buses"""
     # # of buses
-    N = 30 #
+    N = 25 #
     # #seats on each bus
     D = 50
     tolerance = 0
@@ -484,8 +484,7 @@ if __name__ == "__main__":
     alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 100, 100, 100 # 10, 10, 10 # 20, 17, 15
 
     # run main function & save everything to txt and png
-    save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+str(mutation_type)
-    # save_name =  'test_results/testing'
+    save_name =  '../test_results/mutation_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+str(mutation_type)
     f = open(save_name + '.txt', 'w')
     f.write('initial_prob: ' + str(initial_prob) + '\n')
     f.write('pusan_prob: ' + str(pusan_prob) + '\n')
