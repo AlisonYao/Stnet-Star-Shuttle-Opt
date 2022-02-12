@@ -1,6 +1,6 @@
 """
 Author: Yuhan Yao (yy2564@nyu.edu)
-Date: Feb 5, 2022
+Date: Feb 12, 2022
 """
 
 import random
@@ -279,13 +279,11 @@ def create_next_generation(population, population_fitnesses_add_penalty, populat
             k=2
         )
         kid1, kid2 = single_point_crossover(parents[0], parents[1])
-        for _ in range(mutation_num):
-            kid1 = single_mutation(kid1)
+        kid1 = single_mutation(kid1)
         children.append(kid1)
         if len(children) == population_size - elitism_cutoff:
             return np.array(children)
-        for _ in range(mutation_num):
-            kid2 = single_mutation(kid2)
+        kid2 = single_mutation(kid2)
         children.append(kid2)
         if len(children) == population_size - elitism_cutoff:
             return np.array(children)
@@ -459,7 +457,6 @@ if __name__ == "__main__":
     pusan_prob = 0.2
     population_size = 20
     elitism_cutoff = 2
-    mutation_num = 1 #
     loop_limit = 100
     evolution_depth = 30000
     max_iter_num = 20000
@@ -493,13 +490,12 @@ if __name__ == "__main__":
 
     # run main function & save everything to txt and png
     while not SUCCESS:
-        save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_'+str(mutation_num)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'_nv'
+        save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'_nv'
         f = open(save_name + '.txt', 'w')
         f.write('initial_prob: ' + str(initial_prob) + '\n')
         f.write('pusan_prob: ' + str(pusan_prob) + '\n')
         f.write('population_size: ' + str(population_size) + '\n')
         f.write('elitism_cutoff: ' + str(elitism_cutoff) + '\n')
-        f.write('mutation_num: ' + str(mutation_num) + '\n')
         f.write('loop_limit: ' + str(loop_limit) + '\n')
         f.write('evolution_depth: ' + str(evolution_depth) + '\n')
         f.write('max_iter_num: ' + str(max_iter_num) + '\n')
