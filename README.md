@@ -10,9 +10,9 @@ Code for paper: Spatio-Temporal Network for Star-shaped Shuttle Bus Scheduling O
 
 - `NYUSH_solution_no_violation.py` automatically reruns itself when a feasible solution is unfound after a certain number of iteration. If the program ends naturally, there is a feasible solution. If not, it may loop forever (WARNING).
 
-- `NYUSH_solution_no_violation_hpc.py` and `NYUSH_solution_no_violation_hpc.sh` are scripts for HPC. There is not much difference in these two.
+- `NYUSH_solution_no_violation_hpc.py` and `NYUSH_solution_no_violation_hpc.sh` are scripts for HPC. There are not many changes in these two.
 
-- `test_results` has all the output (txt + png).
+- `test_results` has all the output (txt + png) classified in different folders.
 
 ## Notes
 
