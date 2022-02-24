@@ -14,6 +14,12 @@ Code for paper: Spatio-Temporal Network for Star-shaped Shuttle Bus Scheduling O
 
 - `test_results` has all the output (txt + png) classified in different folders.
 
+## Experiment Results
+
+![results](test_results/exp_results.png)
+
+d2r6 is a shorthand for 2 violations of the demand constraint and 6 violations of the rush hour constraint. If there were, for example, 2 violations of the maximum working hour constraint, it would be denoted as w2.
+
 ## Notes
 
 Repo adapted from [DURF-Bus-Schedule-Optimization](https://github.com/AlisonYao/DURF-Bus-Schedule-Optimization).
