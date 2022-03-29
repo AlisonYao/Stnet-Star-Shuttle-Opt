@@ -347,8 +347,8 @@ def result_stats(progress_with_penalty, progress):
     f.write("Improvement Rate of progress: " + str(abs(progress[-1] - progress[0])/progress[0]) + '\n')
     f.write('**************************************************************' + '\n')
     # show plot
-    plt.plot(progress_with_penalty, data=progress_with_penalty, label='with penalty')
-    plt.plot(progress, data=progress, label='no penalty')
+    plt.plot(progress_with_penalty, data=progress_with_penalty, label='Fitness Score')
+    plt.plot(progress, data=progress, label='Operation Cost')
     plt.xlabel("Generation")
     plt.ylabel("Cost")
     plt.legend()
