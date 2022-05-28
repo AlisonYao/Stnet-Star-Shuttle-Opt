@@ -456,14 +456,14 @@ if __name__ == "__main__":
     pusan_prob = 0.2
     population_size = 20
     elitism_cutoff = 2
-    mutation_type = 'New' # 'Conv', 'New'
+    mutation_type = 'Conv' # Conv, New
     mutation_prob = 0.95
     loop_limit = 100
-    evolution_depth = 30000
+    evolution_depth = 47739
 
     """initialization for buses"""
-    # # of buses
-    N = 30 #
+    # total number of buses
+    N = 19
     # #seats on each bus
     D = 50
     tolerance = 0
@@ -481,7 +481,7 @@ if __name__ == "__main__":
     intervalNum = demand.shape[-1]
     maxWorkingHour = 4
     checkDemandFlag, checkRushHourFlag, checkMaxWorkingHourFlag = True, True, True
-    alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 100, 100, 100 # 10, 10, 10 # 20, 17, 15
+    alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 100, 100, 100
 
     # run main function & save everything to txt and png
     save_name =  'test_results/'+str(evolution_depth)+'_'+str(initial_prob)+'_N'+str(N)+'_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+str(mutation_type)
