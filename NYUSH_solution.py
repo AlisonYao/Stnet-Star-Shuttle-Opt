@@ -380,9 +380,7 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
         print(f'----------------------------- generation {i + 1} Start! -----------------------------')
         elitism_begin = time.time()
         elites = elitism(population, population_fitnesses_add_penalty, elitism_cutoff)
-        # print('Elites selected!')
         children = create_next_generation(population, population_fitnesses_add_penalty, population_size, elitism_cutoff)
-        # print('Children created!')
         population = np.concatenate([elites, children])
         population_fitnesses_add_penalty = [fitness(binary_N_paths, addPenalty=True) for binary_N_paths in population]
         population_fitnesses = [fitness(binary_N_paths) for binary_N_paths in population]
@@ -395,11 +393,9 @@ def run_evolution(population_size, evolution_depth, elitism_cutoff):
         allFeasibilityFlag = check_feasibility(best_solution, checkRushHour=checkRushHourFlag, checkMaxWorkingHour=checkMaxWorkingHourFlag)
         print("\nAll constraints met?", allFeasibilityFlag)
 
-        # print best solution
-        # print('best solution (path):\n', best_solution)
+        # best solution
         directional_N_paths = [decode_one_path(one_path) for one_path in population[minIndex]]
         link = sum(directional_N_paths)
-        # print('best solution (link): \n', link)
 
         print(f'---------------------- generation {i + 1} evolved! Time: {evol_end - elitism_begin:.4f}s ----------------------\n')
 
