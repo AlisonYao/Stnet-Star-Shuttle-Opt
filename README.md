@@ -1,6 +1,7 @@
 # Stnet-Star-Shuttle-Opt
 
-Code for paper: Spatio-Temporal Network for Star-shaped Shuttle Bus Scheduling Optimization
+Code for paper: **Shuttle Bus Scheduling Optimization based on Spatio-Temporal Networks**
+
 
 ## Code
 
