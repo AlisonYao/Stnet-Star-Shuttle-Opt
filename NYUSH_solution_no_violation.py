@@ -461,8 +461,8 @@ if __name__ == "__main__":
     # # of buses
     N = 19
     # #seats on each bus
-    D = 50
-    tolerance = 0
+    D = 50 # this is C in the paper
+    tolerance = 0 # this is W in the paper
     intervalDuration = 0.5
     # numerical example
     demand = np.array([
@@ -475,7 +475,7 @@ if __name__ == "__main__":
     demand_PS = demand_PS.astype(int)
 
     intervalNum = demand.shape[-1]
-    maxWorkingHour = 4
+    maxWorkingHour = 4 # this is Q in the paper
     checkDemandFlag, checkRushHourFlag, checkMaxWorkingHourFlag = True, True, True
     alpha, demandViolationPenalty, rushHourViolationPenalty, maxWorkingHourViolationPenalty = 1, 100, 100, 100
 

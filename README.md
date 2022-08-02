@@ -14,6 +14,20 @@ Code for paper: Spatio-Temporal Network for Star-shaped Shuttle Bus Scheduling O
 
 - `test_results` has all the output (txt + png) classified in different folders.
 
+## Pseudocode for solution algorithm
+
+<pre>
+1: initialize population P(i)
+2: calculate operation costs and fitness scores for individuals in population P(i) (fitness score = operation cost + penalties from infeasibility)
+3: while best solution is infeasible
+4:     select best individuals to next generation population P(i+1) from P(i)
+5:     create new individuals in P(i+1) using crossover and mutation from P(i)
+6:     calculate operation costs and fitness scores for individuals in population P(i+1)
+7:     i += 1
+8: end while
+9: return the best feasible solution during evolution
+</pre>
+
 ## Notes
 
 Repo adapted from [DURF-Bus-Schedule-Optimization](https://github.com/AlisonYao/DURF-Bus-Schedule-Optimization).
